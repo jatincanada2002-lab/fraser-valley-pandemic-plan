@@ -266,10 +266,139 @@ export const ScopeComparisonDiagram: React.FC = () => {
 /* -------------------------------------------------------------------------- */
 export const InvestmentAllocationChart: React.FC = () => {
   const [hoveredLabel, setHoveredLabel] = useState<string | null>(null);
+  const [hoveredSlice, setHoveredSlice] = useState<string | null>(null);
   const maxMillions = 300;
+
+  const portfolioSlices = [
+    {
+      name: 'Facilities, Labs & Supplies',
+      amount: 440,
+      pct: 44,
+      color: '#17382b',
+      detail: '$270M Clean Air + $100M Labs + $70M Supplies',
+    },
+    {
+      name: 'Workforce & Community',
+      amount: 250,
+      pct: 25,
+      color: '#006d56',
+      detail: '$190M Workforce/Training + $60M Community',
+    },
+    {
+      name: 'Data, Evaluation & Controls',
+      amount: 200,
+      pct: 20,
+      color: '#00a055',
+      detail: '$130M Data/Cyber + $40M Evaluation + $30M PMO',
+    },
+    {
+      name: 'Readiness Reserve & Contingency',
+      amount: 110,
+      pct: 11,
+      color: '#c97a16',
+      detail: '$80M Readiness Reserve + $30M Contingency',
+    },
+  ];
+
+  // Compute SVG donut ring segments (r = 58, circumference = 2 * pi * 58 ≈ 364.42)
+  const radius = 58;
+  const circumference = 2 * Math.PI * radius;
+  let cumulativePct = 0;
 
   return (
     <div className="mt-6 space-y-6">
+      {/* Portfolio Summary Donut Chart + 4 Buckets */}
+      <div className="rounded-lg border border-[#d8e1dd] bg-white p-5 sm:p-6">
+        <div className="flex flex-col gap-1 border-b border-[#e5ece9] pb-4 sm:flex-row sm:items-baseline sm:justify-between">
+          <div>
+            <h3 className="text-base font-bold tracking-tight text-[#17382b]">
+              INVESTMENT PORTFOLIO SPLIT
+            </h3>
+            <p className="text-xs text-[#4b5d55] mt-0.5">
+              How every dollar of the CAD $1,000,000,000 envelope is distributed across readiness pillars
+            </p>
+          </div>
+          <span className="font-mono-tabular text-xs font-bold text-[#006d56]">
+            100% Accounted
+          </span>
+        </div>
+
+        <div className="mt-5 grid grid-cols-1 gap-6 md:grid-cols-[200px_1fr] items-center">
+          <div className="relative mx-auto flex h-44 w-44 items-center justify-center">
+            <svg viewBox="0 0 160 160" className="h-44 w-44 -rotate-90" role="img" aria-label="Portfolio Allocation Donut Chart">
+              <circle
+                cx="80"
+                cy="80"
+                r={radius}
+                fill="none"
+                stroke="#edf2ef"
+                strokeWidth="22"
+              />
+              {portfolioSlices.map((slice) => {
+                const dashLen = (slice.pct / 100) * circumference;
+                const dashOffset = -((cumulativePct / 100) * circumference);
+                cumulativePct += slice.pct;
+                const isActive = hoveredSlice === slice.name;
+                return (
+                  <circle
+                    key={slice.name}
+                    cx="80"
+                    cy="80"
+                    r={radius}
+                    fill="none"
+                    stroke={slice.color}
+                    strokeWidth={isActive ? 26 : 22}
+                    strokeDasharray={`${dashLen} ${circumference - dashLen}`}
+                    strokeDashoffset={dashOffset}
+                    className="transition-all duration-150 cursor-pointer"
+                    onMouseEnter={() => setHoveredSlice(slice.name)}
+                    onMouseLeave={() => setHoveredSlice(null)}
+                  />
+                );
+              })}
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
+              <span className="font-mono-tabular text-xl font-extrabold text-[#17382b]">
+                $1,000M
+              </span>
+              <span className="text-[11px] text-[#4b5d55]">Total CAD</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {portfolioSlices.map((slice) => (
+              <div
+                key={slice.name}
+                onMouseEnter={() => setHoveredSlice(slice.name)}
+                onMouseLeave={() => setHoveredSlice(null)}
+                className={`rounded-md border p-3.5 transition-colors ${
+                  hoveredSlice === slice.name
+                    ? 'border-[#006d56] bg-[#f4f8f6]'
+                    : 'border-[#e5ece9] bg-[#f9fbfa]'
+                }`}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="inline-block h-3 w-3 rounded-sm shrink-0"
+                      style={{ backgroundColor: slice.color }}
+                    />
+                    <span className="text-xs font-bold text-[#17382b]">
+                      {slice.name}
+                    </span>
+                  </div>
+                  <span className="font-mono-tabular text-xs font-bold text-[#17382b]">
+                    ${slice.amount}M ({slice.pct}%)
+                  </span>
+                </div>
+                <p className="mt-1.5 text-[11px] text-[#4b5d55]">{slice.detail}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Detailed 10-Workstream Bar Chart */}
       <div className="rounded-lg border border-[#d8e1dd] bg-white p-5 sm:p-6">
         <div className="flex flex-col gap-1 border-b border-[#e5ece9] pb-4 sm:flex-row sm:items-baseline sm:justify-between">
           <div>
@@ -484,26 +613,111 @@ export const ThreeSpheresDiagram: React.FC = () => {
         <span className="text-xs text-[#4b5d55]">Business · Organization · Technology</span>
       </div>
 
-      <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-3">
-        {spheres.map((sphere) => (
-          <div
-            key={sphere.name}
-            className="rounded-md border border-[#d8e1dd] bg-[#f7faf9] p-4"
+      {/* Overlapping Venn SVG */}
+      <div className="mt-5 grid grid-cols-1 gap-6 lg:grid-cols-[300px_1fr] items-center">
+        <div className="mx-auto w-full max-w-[280px]">
+          <svg
+            viewBox="0 0 280 250"
+            className="w-full h-auto"
+            role="img"
+            aria-label="Three Spheres of System Management Venn Diagram"
           >
-            <div className="flex items-center gap-2 text-sm font-bold text-[#17382b]">
-              <Layers className="h-4 w-4 text-[#006d56]" aria-hidden="true" />
-              <span>{sphere.name}</span>
+            {/* Business Circle */}
+            <circle
+              cx="140"
+              cy="86"
+              r="72"
+              fill="#17382b"
+              fillOpacity="0.14"
+              stroke="#17382b"
+              strokeWidth="2"
+            />
+            {/* Organization Circle */}
+            <circle
+              cx="96"
+              cy="158"
+              r="72"
+              fill="#006d56"
+              fillOpacity="0.14"
+              stroke="#006d56"
+              strokeWidth="2"
+            />
+            {/* Technology Circle */}
+            <circle
+              cx="184"
+              cy="158"
+              r="72"
+              fill="#00a055"
+              fillOpacity="0.14"
+              stroke="#00a055"
+              strokeWidth="2"
+            />
+            <text
+              x="140"
+              y="46"
+              textAnchor="middle"
+              className="fill-[#17382b] text-[12px] font-bold"
+            >
+              BUSINESS
+            </text>
+            <text
+              x="64"
+              y="188"
+              textAnchor="middle"
+              className="fill-[#17382b] text-[11px] font-bold"
+            >
+              ORGANIZATION
+            </text>
+            <text
+              x="216"
+              y="188"
+              textAnchor="middle"
+              className="fill-[#17382b] text-[11px] font-bold"
+            >
+              TECHNOLOGY
+            </text>
+            {/* Center Intersection Badge */}
+            <circle cx="140" cy="134" r="28" fill="#17382b" />
+            <text
+              x="140"
+              y="131"
+              textAnchor="middle"
+              className="fill-white text-[9px] font-bold"
+            >
+              DESIGN
+            </text>
+            <text
+              x="140"
+              y="143"
+              textAnchor="middle"
+              className="fill-[#bdefdd] text-[9px] font-bold"
+            >
+              GATE
+            </text>
+          </svg>
+        </div>
+
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-1">
+          {spheres.map((sphere) => (
+            <div
+              key={sphere.name}
+              className="rounded-md border border-[#d8e1dd] bg-[#f7faf9] p-3.5"
+            >
+              <div className="flex items-center gap-2 text-sm font-bold text-[#17382b]">
+                <Layers className="h-4 w-4 text-[#006d56]" aria-hidden="true" />
+                <span>{sphere.name}</span>
+              </div>
+              <ul className="mt-2 space-y-1 text-xs text-[#2f3d37]">
+                {sphere.items.map((item) => (
+                  <li key={item}>• {item}</li>
+                ))}
+              </ul>
             </div>
-            <ul className="mt-2.5 space-y-1.5 text-xs text-[#2f3d37]">
-              {sphere.items.map((item) => (
-                <li key={item}>• {item}</li>
-              ))}
-            </ul>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
-      <div className="mt-4 rounded-md border border-[#bdefdd] bg-[#edf8f3] px-4 py-3 text-center text-xs font-medium text-[#17382b]">
+      <div className="mt-5 rounded-md border border-[#bdefdd] bg-[#edf8f3] px-4 py-3 text-center text-xs font-medium text-[#17382b]">
         Converging Gate Sign-Off: Business, Operational, and Technical Owners agree on benefits, capacity, integration, and lifecycle requirements.
       </div>
     </div>
@@ -1150,9 +1364,35 @@ export const RisksControlTable: React.FC = () => {
 
   const highCount = TOP_TEN_RISKS.filter((r) => r.level === 'High').length;
   const medCount = TOP_TEN_RISKS.filter((r) => r.level === 'Medium').length;
+  const highPct = Math.round((highCount / TOP_TEN_RISKS.length) * 100);
+  const medPct = 100 - highPct;
 
   return (
     <div className="mt-4 space-y-4">
+      {/* Visual Risk Severity Breakdown Bar */}
+      <div className="rounded-lg border border-[#d8e1dd] bg-[#f7faf9] p-4">
+        <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-semibold text-[#17382b] mb-2">
+          <span>Top 10 Risk Severity Distribution</span>
+          <span className="font-mono-tabular text-[#4b5d55]">
+            {highCount} High ({highPct}%) · {medCount} Medium ({medPct}%)
+          </span>
+        </div>
+        <div className="flex h-5 w-full overflow-hidden rounded border border-[#d8e1dd]">
+          <div
+            className="bg-[#b91c1c] text-white text-[11px] font-bold flex items-center justify-center font-mono-tabular"
+            style={{ width: `${highPct}%` }}
+          >
+            High: {highCount}
+          </div>
+          <div
+            className="bg-[#c97a16] text-white text-[11px] font-bold flex items-center justify-center font-mono-tabular"
+            style={{ width: `${medPct}%` }}
+          >
+            Medium: {medCount}
+          </div>
+        </div>
+      </div>
+
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4 text-xs text-[#4b5d55] font-mono-tabular">
           <span>Total Risks: {TOP_TEN_RISKS.length}</span>
@@ -1172,7 +1412,7 @@ export const RisksControlTable: React.FC = () => {
               key={lvl}
               type="button"
               onClick={() => setFilterLevel(lvl)}
-              className={`px-3 py-1.5 text-xs font-semibold rounded transition-colors whitespace-nowrap shrink-0 ${
+              className={`px-3 py-1.5 text-xs font-semibold rounded transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
                 filterLevel === lvl
                   ? 'bg-[#17382b] text-white'
                   : 'text-[#4b5d55] hover:text-[#17382b]'

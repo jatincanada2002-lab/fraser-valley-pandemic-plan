@@ -13,7 +13,6 @@ import {
   CostOfQualityDiagram,
   DeliverablesChecklistGrid,
   DeliveryGanttChart,
-  EscalationAndClosureDiagram,
   FourFramesDiagram,
   GovernanceArchitectureDiagram,
   HrStaffingDiagram,
@@ -31,6 +30,15 @@ import {
   ThreeSpheresDiagram,
   WaterfallFlowchart,
 } from './components/ChartsAndDiagrams';
+import {
+  GateJustificationFlowchart,
+  MotivationWellnessDiagram,
+  ProjectCharterBlueprint,
+  ProjectClosureVisual,
+  ReadinessNetworkDiagram,
+  ResourcePlanningDiagram,
+  StakeholderGovernanceVisual,
+} from './components/AdditionalVisuals';
 
 const CATEGORY_TABS: { key: SectionCategory; label: string }[] = [
   { key: 'all', label: 'All Sections' },
@@ -63,6 +71,8 @@ function renderSectionVisual(sectionId: string): React.ReactNode {
       return <GovernanceArchitectureDiagram />;
     case 'sec-8':
       return <DeliverablesChecklistGrid />;
+    case 'sec-10':
+      return <GateJustificationFlowchart />;
     case 'sec-10-1':
       return <ProcessGroupsFlowDiagram />;
     case 'sec-11':
@@ -75,10 +85,16 @@ function renderSectionVisual(sectionId: string): React.ReactNode {
       return <RoiScenarioDiagram />;
     case 'sec-15':
       return <QualityGateFlowchart />;
+    case 'sec-16':
+      return <ProjectCharterBlueprint />;
     case 'sec-17':
       return <CostOfQualityDiagram />;
     case 'sec-18':
       return <HrStaffingDiagram />;
+    case 'sec-19':
+      return <MotivationWellnessDiagram />;
+    case 'sec-20':
+      return <ResourcePlanningDiagram />;
     case 'sec-21':
       return <CommunicationMatrixTable />;
     case 'sec-22':
@@ -86,8 +102,9 @@ function renderSectionVisual(sectionId: string): React.ReactNode {
     case 'sec-23':
       return <ProcurementFlowDiagram />;
     case 'sec-24':
+      return <StakeholderGovernanceVisual />;
     case 'sec-25':
-      return sectionId === 'sec-25' ? <EscalationAndClosureDiagram /> : null;
+      return <ProjectClosureVisual />;
     default:
       return null;
   }
@@ -406,6 +423,7 @@ export default function App() {
                   <p key={idx}>{para}</p>
                 ))}
               </div>
+              <ReadinessNetworkDiagram />
             </section>
           )}
 
