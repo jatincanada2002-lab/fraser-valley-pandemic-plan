@@ -413,7 +413,7 @@ export default function App() {
               className="scroll-mt-20 rounded-lg border border-[#d8e1dd] bg-white p-6 sm:p-8"
             >
               <div className="text-xs text-[#4b5d55] font-medium">
-                Overview · Chaacha &amp; UFV Readiness Network
+                Overview ·  &amp; UFV Readiness Network
               </div>
               <h2 className="mt-1 font-display text-2xl font-bold tracking-tight text-[#17382b]">
                 {INTRODUCTION_SECTION.title}
