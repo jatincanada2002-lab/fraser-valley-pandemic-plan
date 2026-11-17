@@ -1,0 +1,6 @@
+{
+  "name": "Ready Valley 2029 — Fraser Valley Pandemic Preparedness Charter",
+  "description": "Visual project charter and checklist proposal for Ready Valley 2029: Fraser Valley Pandemic Preparedness network with UFV and Fraser Health.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
